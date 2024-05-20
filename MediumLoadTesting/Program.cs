@@ -10,6 +10,8 @@ builder.Services.AddSwaggerGen();
 
 var configuration = builder.Configuration;
 
+builder.Services.AddHttpContextAccessor();
+
 builder.Services.AddDbContext<AppDbContext>(
     options => options.UseSqlServer(configuration.GetConnectionString("DatabaseConnection"))
 );
