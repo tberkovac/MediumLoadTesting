@@ -1,9 +1,19 @@
+using MediumLoadTesting;
+using Microsoft.EntityFrameworkCore;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+var configuration = builder.Configuration;
+
+builder.Services.AddDbContext<AppDbContext>(
+    options => options.UseSqlServer(configuration.GetConnectionString("DatabaseConnection"))
+);
+
 
 var app = builder.Build();
 
@@ -12,6 +22,10 @@ if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
+
+    using var scope = app.Services.CreateScope();
+    var appDbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    appDbContext.Database.Migrate();
 }
 
 app.UseHttpsRedirection();
@@ -34,6 +48,14 @@ app.MapGet("/weatherforecast", () =>
     return forecast;
 })
 .WithName("GetWeatherForecast")
+.WithOpenApi();
+
+app.MapGet("/booksDb", async (AppDbContext dbContext) =>
+{
+    var forecast = await dbContext.Books.ToListAsync();
+    return forecast;
+})
+.WithName("GetBooksFromDb")
 .WithOpenApi();
 
 app.Run();
