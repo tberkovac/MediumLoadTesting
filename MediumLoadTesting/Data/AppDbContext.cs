@@ -8,8 +8,8 @@ public class AppDbContext : DbContext
 {
     public AppDbContext(DbContextOptions<AppDbContext> options, IHttpContextAccessor accessor) : base(options)
     {
-        var conn = Database.GetDbConnection() as SqlConnection;
-        conn.AccessToken = accessor.HttpContext.Request.Headers["X-MS-TOKEN-AAD-ACCESS-TOKEN"];
+         var conn = Database.GetDbConnection() as SqlConnection;
+         conn.AccessToken = accessor.HttpContext.Request.Headers["X-MS-TOKEN-AAD-ACCESS-TOKEN"];
     }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
